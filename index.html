@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>imgtouch - Gen Z Creative Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Calligraphy, Display, and Thematic Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Allura&family=Bebas+Neue&family=Cinzel:wght@400;700&family=Cinzel+Decorative:wght@400;700&family=Creepster&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Inter:wght@300;400;600;800&family=Metal+Mania&family=Monsieur+La+Doulaise&family=Orbitron:wght@400;700&family=Pacifico&family=Parisienne&family=Pinyon+Script&family=Playball&family=Ruslan+Display&family=Rye&family=Sacramento&family=Satisfy&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              'dancing': ['"Dancing Script"', 'cursive'],
+              'great-vibes': ['"Great Vibes"', 'cursive'],
+              'pacifico': ['Pacifico', 'cursive'],
+              'satisfy': ['Satisfy', 'cursive'],
+              'sacramento': ['Sacramento', 'cursive'],
+              'parisienne': ['Parisienne', 'cursive'],
+              'allura': ['Allura', 'cursive'],
+              'pinyon': ['"Pinyon Script"', 'cursive'],
+              'playball': ['Playball', 'cursive'],
+              'abril': ['"Abril Fatface"', 'cursive'],
+              'bebas': ['"Bebas Neue"', 'sans-serif'],
+              'cinzel': ['Cinzel', 'serif'],
+              'cinzel-dec': ['"Cinzel Decorative"', 'serif'],
+              'orbitron': ['Orbitron', 'sans-serif'],
+              'ruslan': ['"Ruslan Display"', 'cursive'],
+              'rye': ['Rye', 'serif'],
+              'metal': ['"Metal Mania"', 'cursive'],
+              'gothic': ['"UnifrakturMaguntia"', 'cursive'],
+              'creepster': ['Creepster', 'cursive'],
+              'monsieur': ['"Monsieur La Doulaise"', 'cursive'],
+            },
+            colors: {
+              'z-black': '#0a0a0a',
+              'z-dark': '#121212',
+              'z-panel': '#1E1E1E',
+              'z-lime': '#ccff00',
+              'z-pink': '#ff00cc',
+              'z-violet': '#bd00ff',
+              'z-cyan': '#00f7ff',
+              'z-gold': '#FFD700',
+              'z-blood': '#8a0303',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Custom Scrollbar for a sleeker look */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #121212; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #333; 
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555; 
+      }
+      .glass-panel {
+        background: rgba(30, 30, 30, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .canvas-pattern {
+        background-color: #121212;
+        background-image: radial-gradient(#2a2a2a 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+      /* Advanced Typography */
+      .pro-text-render {
+        paint-order: stroke fill;
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "uuid": "https://aistudiocdn.com/uuid@^13.0.0",
+    "html2canvas": "https://aistudiocdn.com/html2canvas@^1.4.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-z-black text-white antialiased overflow-hidden">
+    <div id="root" class="h-screen w-screen flex flex-col"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
