@@ -8,9 +8,10 @@ interface CanvasBoardProps {
   activeTool: ToolType;
   onCanvasClick: (e: React.MouseEvent) => void;
   setCanvasRef: (ref: HTMLDivElement | null) => void;
+  zoomScale: number;
+  onZoomChange: (scale: number) => void;
 }
 
-// Utility to generate CSS styles for advanced text
 const getLayerStyles = (layer: Layer): React.CSSProperties => {
   const baseStyles: React.CSSProperties = {
     position: 'absolute',
@@ -24,15 +25,18 @@ const getLayerStyles = (layer: Layer): React.CSSProperties => {
   };
 
   if (layer.type === 'image') {
-      return {
-          ...baseStyles,
-          width: `${layer.width}px`,
-          height: `${layer.height}px`,
-          pointerEvents: 'auto'
-      };
+    const imgLayer = layer as ImageLayer;
+    const flipXStr = imgLayer.flipX ? 'scaleX(-1)' : '';
+    const flipYStr = imgLayer.flipY ? 'scaleY(-1)' : '';
+    return {
+        ...baseStyles,
+        width: `${layer.width}px`,
+        height: `${layer.height}px`,
+        transform: `translate(0, 0) rotate(${layer.rotation}deg) ${flipXStr} ${flipYStr}`.trim(),
+        pointerEvents: 'auto'
+    };
   }
 
-  // Text Specific
   const textLayer = layer as TextLayer;
   const textStyles: React.CSSProperties = {
     ...baseStyles,
@@ -47,7 +51,6 @@ const getLayerStyles = (layer: Layer): React.CSSProperties => {
     WebkitFontSmoothing: 'antialiased',
   };
 
-  // Handle Gradients vs Color
   if (textLayer.gradient) {
     textStyles.backgroundImage = textLayer.gradient;
     textStyles.WebkitBackgroundClip = 'text';
@@ -57,12 +60,10 @@ const getLayerStyles = (layer: Layer): React.CSSProperties => {
     textStyles.color = textLayer.color;
   }
 
-  // Handle Stroke
   if (textLayer.strokeWidth && textLayer.strokeWidth > 0 && textLayer.strokeColor) {
     textStyles.WebkitTextStroke = `${textLayer.strokeWidth}px ${textLayer.strokeColor}`;
   }
 
-  // Handle Shadow
   if (textLayer.shadow) {
     const shadowStr = `${textLayer.shadowOffsetX}px ${textLayer.shadowOffsetY}px ${textLayer.shadowBlur}px ${textLayer.shadowColor}`;
     if (textLayer.gradient) {
@@ -81,7 +82,9 @@ const CanvasBoard: React.FC<CanvasBoardProps> = ({
   onLayerUpdate,
   activeTool,
   onCanvasClick,
-  setCanvasRef
+  setCanvasRef,
+  zoomScale,
+  onZoomChange
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -103,7 +106,7 @@ const CanvasBoard: React.FC<CanvasBoardProps> = ({
     
     onLayerSelect(layerId);
     
-    if (activeTool === ToolType.SELECT || activeTool === ToolType.TEXT || activeTool === ToolType.STICKER) {
+    if (activeTool === ToolType.SELECT || activeTool === ToolType.TEXT || activeTool === ToolType.STICKER || activeTool === ToolType.TEMPLATES) {
         setDraggingId(layerId);
         const layer = imageState.layers.find(l => l.id === layerId);
         if (layer) {
@@ -144,8 +147,8 @@ const CanvasBoard: React.FC<CanvasBoardProps> = ({
     if (!layer) return;
 
     if (resizing) {
-      const dx = e.clientX - startPos.x;
-      const dy = e.clientY - startPos.y;
+      const dx = (e.clientX - startPos.x) / zoomScale;
+      const dy = (e.clientY - startPos.y) / zoomScale;
       const delta = (dx + dy) / 2; 
       
       if (layer.type === 'text') {
@@ -159,19 +162,19 @@ const CanvasBoard: React.FC<CanvasBoardProps> = ({
       }
 
     } else if (rotating) {
-      const dx = e.clientX - startPos.x;
+      const dx = (e.clientX - startPos.x) / zoomScale;
       const newRotation = (initialLayerProps.rotation || 0) + dx * 0.5;
       onLayerUpdate(draggingId, { rotation: newRotation });
 
     } else {
-      const dx = e.clientX - startPos.x;
-      const dy = e.clientY - startPos.y;
+      const dx = (e.clientX - startPos.x) / zoomScale;
+      const dy = (e.clientY - startPos.y) / zoomScale;
       onLayerUpdate(draggingId, {
         x: (initialLayerProps.x || 0) + dx,
         y: (initialLayerProps.y || 0) + dy
       });
     }
-  }, [draggingId, resizing, rotating, startPos, initialLayerProps, imageState.layers, onLayerUpdate]);
+  }, [draggingId, resizing, rotating, startPos, initialLayerProps, imageState.layers, onLayerUpdate, zoomScale]);
 
   const handleMouseUp = useCallback(() => {
     setDraggingId(null);
@@ -183,7 +186,6 @@ const CanvasBoard: React.FC<CanvasBoardProps> = ({
     if (draggingId) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
-      // Touch events could be added here for better mobile dragging support in future
     }
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -205,18 +207,15 @@ const CanvasBoard: React.FC<CanvasBoardProps> = ({
     height: `${imageState.canvasSize.height}px`,
     position: 'relative',
     overflow: 'hidden',
-    backgroundColor: '#0a0a0a',
-    boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
     filter: imageState.filterStr,
-    transition: 'width 0.3s ease, height 0.3s ease, filter 0.3s ease',
+    transform: `scale(${zoomScale})`,
+    transition: draggingId ? 'none' : 'transform 0.2s ease, width 0.3s ease, height 0.3s ease, filter 0.3s ease',
     transformOrigin: 'center center',
-    maxWidth: '100%', // Ensure it doesn't overflow on mobile
-    maxHeight: '100%', // Ensure it doesn't overflow height
   };
 
   return (
     <div 
-      className="flex-1 h-full relative flex items-center justify-center p-4 md:p-12 overflow-auto canvas-pattern cursor-default touch-none"
+      className="flex-1 h-full relative flex items-center justify-center p-6 md:p-14 overflow-auto canvas-pattern cursor-default touch-none"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
             onLayerSelect(null);
@@ -224,13 +223,38 @@ const CanvasBoard: React.FC<CanvasBoardProps> = ({
         }
       }}
     >
+      {/* Floating Canvas Zoom Controls */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 bg-white/90 dark:bg-g-dark-surface/90 backdrop-blur-md border border-gray-200 dark:border-g-dark-border shadow-lg rounded-2xl px-3 py-1.5 flex items-center gap-2">
+        <button 
+          onClick={() => onZoomChange(Math.max(0.3, zoomScale - 0.1))}
+          className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+          title="Zoom Out (-10%)"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" /></svg>
+        </button>
+        <button 
+          onClick={() => onZoomChange(1.0)}
+          className="text-xs font-mono font-bold text-gray-700 dark:text-gray-300 hover:text-g-blue dark:hover:text-g-blue-light px-2 py-0.5 rounded transition-colors"
+          title="Reset Zoom to 100%"
+        >
+          {Math.round(zoomScale * 100)}%
+        </button>
+        <button 
+          onClick={() => onZoomChange(Math.min(2.5, zoomScale + 0.1))}
+          className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+          title="Zoom In (+10%)"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+        </button>
+      </div>
+
       <div 
         ref={containerRef}
         style={containerStyle}
         onClick={(e) => {
              if(!editingId) onCanvasClick(e);
         }}
-        className="relative shadow-2xl select-none border border-white/5"
+        className="relative shadow-2xl rounded-sm select-none bg-white dark:bg-g-dark-surface border border-gray-300 dark:border-g-dark-border transition-colors duration-200 shrink-0"
       >
         {imageState.backgroundUrl && (
             <div className="absolute inset-0 flex items-center justify-center">
@@ -243,14 +267,14 @@ const CanvasBoard: React.FC<CanvasBoardProps> = ({
         )}
         
         {!imageState.backgroundUrl && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-600 bg-z-panel/20">
-            <div className="border-2 border-dashed border-gray-700/50 rounded-lg p-8 md:p-12 flex flex-col items-center scale-75 md:scale-100">
-                <div className="bg-z-panel/50 p-6 rounded-full mb-4">
-                    <svg className="w-12 h-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 bg-gray-50/50 dark:bg-g-dark-bg/50">
+            <div className="border-2 border-dashed border-gray-300 dark:border-g-dark-border rounded-2xl p-8 md:p-12 flex flex-col items-center scale-75 md:scale-100 shadow-inner">
+                <div className="bg-white dark:bg-g-dark-card shadow-sm p-6 rounded-2xl mb-4 border border-gray-100 dark:border-g-dark-border">
+                    <svg className="w-12 h-12 text-g-blue dark:text-g-blue-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 </div>
-                <p className="font-bebas text-2xl opacity-50">Blank Canvas</p>
-                <p className="text-xs font-mono mt-2 opacity-40">
-                {imageState.canvasSize.width} x {imageState.canvasSize.height}
+                <p className="font-sans font-bold text-2xl text-gray-600 dark:text-gray-300 tracking-tight">Blank Canvas</p>
+                <p className="text-xs font-mono font-semibold mt-2 text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">
+                {imageState.canvasSize.width} × {imageState.canvasSize.height} px
                 </p>
             </div>
           </div>
@@ -276,7 +300,7 @@ const CanvasBoard: React.FC<CanvasBoardProps> = ({
                             pointerEvents: 'auto',
                             background: 'transparent',
                             border: 'none',
-                            outline: '2px dashed #ccff00',
+                            outline: '2px dashed #1a73e8',
                             resize: 'none',
                             overflow: 'hidden',
                             minWidth: '100px',
@@ -302,17 +326,17 @@ const CanvasBoard: React.FC<CanvasBoardProps> = ({
                         )}
                         
                         {isSelected && (
-                            <div className={`absolute -inset-2 border-2 border-dashed pointer-events-none ${layer.type === 'image' ? 'border-z-lime' : 'border-z-cyan'}`}>
+                            <div className="absolute -inset-2 border-2 border-dashed pointer-events-none border-g-blue dark:border-g-blue-light">
                                 <div 
-                                    className={`absolute -right-3 -bottom-3 w-5 h-5 bg-white border-2 rounded-full pointer-events-auto cursor-se-resize shadow-lg ${layer.type === 'image' ? 'border-z-lime' : 'border-z-cyan'}`}
+                                    className="absolute -right-3 -bottom-3 w-5 h-5 bg-white dark:bg-g-dark-card border-2 border-g-blue dark:border-g-blue-light rounded-full pointer-events-auto cursor-se-resize shadow-md"
                                     onMouseDown={(e) => handleResizeStart(e, layer.id)}
                                 />
-                                <div className={`absolute -top-8 left-1/2 -translate-x-1/2 w-1 h-6 pointer-events-none ${layer.type === 'image' ? 'bg-z-lime' : 'bg-z-cyan'}`}></div>
+                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-0.5 h-6 pointer-events-none bg-g-blue dark:bg-g-blue-light"></div>
                                 <div 
-                                    className={`absolute -top-10 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full pointer-events-auto cursor-ew-resize shadow-lg flex items-center justify-center hover:scale-110 transition-transform ${layer.type === 'image' ? 'bg-z-lime' : 'bg-z-cyan'}`}
+                                    className="absolute -top-10 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full pointer-events-auto cursor-ew-resize shadow-md flex items-center justify-center hover:scale-110 transition-transform bg-g-blue dark:bg-g-blue-light"
                                     onMouseDown={(e) => handleRotateStart(e, layer.id)}
                                 >
-                                    <svg className="w-3 h-3 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                                    <svg className="w-3 h-3 text-white dark:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                                 </div>
                             </div>
                         )}

@@ -1,5 +1,4 @@
-
-import { FontOption, TextPreset, TextLayer, AspectRatio, StickerPreset } from './types';
+import { FontOption, TextPreset, TextLayer, AspectRatio, StickerPreset, TemplatePreset } from './types';
 
 export const FONTS: FontOption[] = [
   { name: 'Inter', value: 'font-sans', category: 'Sans' },
@@ -57,7 +56,7 @@ export const DEFAULT_TEXT_LAYER: Omit<TextLayer, 'id' | 'x' | 'y'> = {
   gradient: null,
 };
 
-// Simple SVG shapes encoded as Data URIs for instant use without external dependencies
+// SVG shapes encoded as Data URIs
 const SVG_STAR = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffffff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
 const SVG_SHIELD = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffffff"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>`;
 const SVG_CIRCLE = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffffff"><circle cx="12" cy="12" r="10"/></svg>`;
@@ -222,4 +221,156 @@ export const TEXT_PRESETS: TextPreset[] = [
       text: "NEON"
     }
   },
+];
+
+export const TEMPLATE_PRESETS: TemplatePreset[] = [
+  {
+    id: 'minimal-quote',
+    name: 'Minimalist Quote Card',
+    category: 'Quote',
+    aspectRatioName: 'square',
+    canvasSize: { width: 800, height: 800 },
+    previewGradient: 'linear-gradient(135deg, #1a73e8 0%, #34a853 100%)',
+    layers: [
+      {
+        type: 'text',
+        text: '“Simplicity is the ultimate sophistication.”',
+        fontFamily: 'font-cinzel',
+        fontSize: 48,
+        color: '#ffffff',
+        rotation: 0,
+        opacity: 1,
+        fontWeight: 'bold',
+        letterSpacing: 1,
+        lineHeight: 1.2,
+        shadow: true,
+        shadowColor: 'rgba(0,0,0,0.4)',
+        shadowBlur: 10,
+        shadowOffsetX: 0,
+        shadowOffsetY: 4,
+        x: 100,
+        y: 320
+      },
+      {
+        type: 'text',
+        text: '— LEONARDO DA VINCI',
+        fontFamily: 'font-sans',
+        fontSize: 20,
+        color: '#f1f3f4',
+        rotation: 0,
+        opacity: 0.9,
+        fontWeight: 'bold',
+        letterSpacing: 4,
+        lineHeight: 1,
+        shadow: false,
+        shadowColor: '#000000',
+        shadowBlur: 0,
+        shadowOffsetX: 0,
+        shadowOffsetY: 0,
+        x: 260,
+        y: 480
+      }
+    ]
+  },
+  {
+    id: 'youtube-thumb',
+    name: 'YouTube Action Thumbnail',
+    category: 'Thumbnail',
+    aspectRatioName: 'landscape',
+    canvasSize: { width: 1000, height: 563 },
+    previewGradient: 'linear-gradient(135deg, #ea4335 0%, #fbbc04 100%)',
+    layers: [
+      {
+        type: 'text',
+        text: 'HOW I BUILT THIS!',
+        fontFamily: 'font-bebas',
+        fontSize: 90,
+        color: '#ffffff',
+        rotation: -3,
+        opacity: 1,
+        fontWeight: 'bold',
+        letterSpacing: 2,
+        lineHeight: 1,
+        gradient: 'linear-gradient(180deg, #ffffff 0%, #fbbc04 100%)',
+        strokeColor: '#000000',
+        strokeWidth: 3,
+        shadow: true,
+        shadowColor: 'rgba(0,0,0,0.8)',
+        shadowBlur: 20,
+        shadowOffsetX: 4,
+        shadowOffsetY: 6,
+        x: 80,
+        y: 200
+      },
+      {
+        type: 'image',
+        src: SVG_STAR,
+        width: 140,
+        height: 140,
+        rotation: 12,
+        opacity: 1,
+        x: 800,
+        y: 60
+      }
+    ]
+  },
+  {
+    id: 'social-story',
+    name: 'Vibrant Story Cover',
+    category: 'Social',
+    aspectRatioName: 'story',
+    canvasSize: { width: 563, height: 1000 },
+    previewGradient: 'linear-gradient(180deg, #8ab4f8 0%, #1a73e8 100%)',
+    layers: [
+      {
+        type: 'text',
+        text: 'SUMMER VIBES',
+        fontFamily: 'font-dancing',
+        fontSize: 72,
+        color: '#ffffff',
+        rotation: -5,
+        opacity: 1,
+        fontWeight: 'bold',
+        letterSpacing: 1,
+        lineHeight: 1.1,
+        shadow: true,
+        shadowColor: 'rgba(0,0,0,0.3)',
+        shadowBlur: 12,
+        shadowOffsetX: 0,
+        shadowOffsetY: 4,
+        x: 80,
+        y: 420
+      }
+    ]
+  },
+  {
+    id: 'tech-banner',
+    name: 'Cyberpunk Tech Header',
+    category: 'Banner',
+    aspectRatioName: 'landscape',
+    canvasSize: { width: 1000, height: 563 },
+    previewGradient: 'linear-gradient(135deg, #111827 0%, #1f2937 100%)',
+    layers: [
+      {
+        type: 'text',
+        text: 'FUTURE AI STUDIO',
+        fontFamily: 'font-orbitron',
+        fontSize: 64,
+        color: '#8ab4f8',
+        rotation: 0,
+        opacity: 1,
+        fontWeight: 'bold',
+        letterSpacing: 4,
+        lineHeight: 1,
+        gradient: 'linear-gradient(to right, #8ab4f8, #34a853)',
+        shadow: true,
+        shadowColor: '#1a73e8',
+        shadowBlur: 25,
+        shadowOffsetX: 0,
+        shadowOffsetY: 0,
+        x: 140,
+        y: 220
+      }
+    ]
+  }
 ];

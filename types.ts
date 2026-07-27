@@ -1,8 +1,8 @@
-
 export enum ToolType {
   SELECT = 'SELECT',
   TEXT = 'TEXT',
   STICKER = 'STICKER',
+  TEMPLATES = 'TEMPLATES',
   AI_GENERATE = 'AI_GENERATE',
   AI_EDIT = 'AI_EDIT',
   FILTERS = 'FILTERS',
@@ -47,9 +47,12 @@ export interface ImageLayer extends BaseLayer {
   width: number;
   height: number;
   filter?: string; // CSS filter
+  flipX?: boolean;
+  flipY?: boolean;
 }
 
 export type Layer = TextLayer | ImageLayer;
+export type TemplateLayer = Omit<TextLayer, 'id'> | Omit<ImageLayer, 'id'>;
 
 export interface AspectRatio {
   name: string;
@@ -84,6 +87,18 @@ export interface StickerPreset {
   url: string;
   label: string;
   category: 'Shape' | 'Badge' | 'Decoration' | 'Effect';
+}
+
+export interface TemplatePreset {
+  id: string;
+  name: string;
+  category: 'Quote' | 'Social' | 'Thumbnail' | 'Product' | 'Banner';
+  aspectRatioName: string;
+  canvasSize: { width: number; height: number };
+  backgroundColor?: string;
+  backgroundUrl?: string;
+  layers: TemplateLayer[];
+  previewGradient: string;
 }
 
 export interface AIRequestState {

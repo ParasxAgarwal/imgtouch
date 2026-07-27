@@ -8,6 +8,7 @@ interface ToolboxProps {
 
 const TOOLS = [
   { id: ToolType.SELECT, icon: 'M3 15V3m0 0l5.55 5.55M3 3l12 12', label: 'Pointer' },
+  { id: ToolType.TEMPLATES, icon: 'M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z', label: 'Patterns' },
   { id: ToolType.TEXT, icon: 'M4 7V4h16v3M9 20h6M12 4v16', label: 'Type' },
   { id: ToolType.STICKER, icon: 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z', label: 'Elements' },
   { id: ToolType.AI_GENERATE, icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10', label: 'Magic Gen' },
@@ -19,10 +20,10 @@ const Toolbox: React.FC<ToolboxProps> = ({ activeTool, setActiveTool }) => {
   return (
     <aside className="
       flex md:flex-col items-center justify-around md:justify-start 
-      w-full md:w-20 h-16 md:h-full md:py-6 md:gap-6 
-      bg-z-black/95 md:glass-panel 
-      border-t md:border-t-0 md:border-r border-white/10 
-      z-50 pb-[env(safe-area-inset-bottom)] md:pb-0
+      w-full md:w-20 h-16 md:h-full md:py-6 md:gap-4 
+      bg-white dark:bg-g-dark-surface
+      border-t md:border-t-0 md:border-r border-gray-200 dark:border-g-dark-border
+      z-50 pb-[env(safe-area-inset-bottom)] md:pb-0 shadow-sm transition-colors duration-200
     ">
       {TOOLS.map((tool) => {
         const isActive = activeTool === tool.id;
@@ -31,32 +32,36 @@ const Toolbox: React.FC<ToolboxProps> = ({ activeTool, setActiveTool }) => {
             key={tool.id}
             onClick={() => setActiveTool(tool.id)}
             className={`
-              w-12 h-12 md:w-12 md:h-12 rounded-2xl flex flex-col items-center justify-center transition-all duration-300 group relative
-              ${isActive ? 'text-z-black' : 'text-gray-400 hover:bg-white/10 hover:text-white'}
+              w-12 h-12 md:w-16 md:h-12 rounded-xl flex flex-col items-center justify-center transition-all duration-200 group relative p-1
+              ${isActive 
+                ? 'text-g-blue dark:text-g-blue-light' 
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white'}
             `}
             title={tool.label}
           >
             <div className={`
-              absolute inset-0 rounded-2xl transition-opacity duration-300
-              ${isActive ? 'bg-z-lime opacity-100 shadow-lg shadow-z-lime/20' : 'opacity-0'}
+              absolute inset-0 rounded-xl transition-opacity duration-200
+              ${isActive ? 'bg-blue-50 dark:bg-g-blue/20 border border-blue-200/60 dark:border-g-blue/30 opacity-100' : 'opacity-0'}
             `} />
             
-            <div className="relative z-10 flex flex-col items-center">
-                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div className="relative z-10 flex flex-col items-center justify-center">
+                <svg className="w-5 h-5 md:w-5 md:h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={tool.icon} />
                 </svg>
-                <span className={`text-[9px] mt-1 font-bold ${isActive ? 'text-z-black' : 'text-gray-500 group-hover:text-gray-300'}`}>
+                <span className={`text-[9px] mt-0.5 font-semibold leading-none truncate max-w-[56px] text-center ${
+                  isActive ? 'text-g-blue dark:text-g-blue-light font-bold' : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200'
+                }`}>
                 {tool.label}
                 </span>
             </div>
             
             {/* Active Indicator Desktop */}
             {isActive && (
-              <div className="hidden md:block absolute -left-[1px] top-1/2 -translate-y-1/2 h-8 w-1 bg-white rounded-r-md" />
+              <div className="hidden md:block absolute -left-[1px] top-1/2 -translate-y-1/2 h-7 w-1 bg-g-blue dark:bg-g-blue-light rounded-r-md" />
             )}
             {/* Active Indicator Mobile */}
             {isActive && (
-              <div className="md:hidden absolute -top-[1px] left-1/2 -translate-x-1/2 w-8 h-1 bg-white rounded-b-md" />
+              <div className="md:hidden absolute -top-[1px] left-1/2 -translate-x-1/2 w-7 h-1 bg-g-blue dark:bg-g-blue-light rounded-b-md" />
             )}
           </button>
         );

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>imgtouch - Gen Z Creative Studio</title>
+    <title>imgtouch - AI Creative Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Allura&family=Bebas+Neue&family=Cinzel:wght@400;700&family=Cinzel+Decorative:wght@400;700&family=Creepster&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Inter:wght@300;400;600;800&family=Metal+Mania&family=Monsieur+La+Doulaise&family=Orbitron:wght@400;700&family=Pacifico&family=Parisienne&family=Pinyon+Script&family=Playball&family=Ruslan+Display&family=Rye&family=Sacramento&family=Satisfy&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             fontFamily: {
@@ -37,15 +38,20 @@
               'monsieur': ['"Monsieur La Doulaise"', 'cursive'],
             },
             colors: {
-              'z-black': '#0a0a0a',
-              'z-dark': '#121212',
-              'z-panel': '#1E1E1E',
-              'z-lime': '#ccff00',
-              'z-pink': '#ff00cc',
-              'z-violet': '#bd00ff',
-              'z-cyan': '#00f7ff',
-              'z-gold': '#FFD700',
-              'z-blood': '#8a0303',
+              'g-blue': '#1a73e8',
+              'g-blue-light': '#8ab4f8',
+              'g-red': '#ea4335',
+              'g-yellow': '#fbbc04',
+              'g-green': '#34a853',
+              'g-surface': '#ffffff',
+              'g-bg': '#f8f9fa',
+              'g-text': '#202124',
+              'g-border': '#dadce0',
+              'g-dark-bg': '#1e1f22',
+              'g-dark-surface': '#2b2d31',
+              'g-dark-card': '#313338',
+              'g-dark-border': '#3f4248',
+              'g-dark-text': '#f2f3f5',
             }
           }
         }
@@ -54,28 +60,36 @@
     <style>
       /* Custom Scrollbar for a sleeker look */
       ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
+        width: 8px;
+        height: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #121212; 
+        background: #f1f3f4; 
+      }
+      .dark ::-webkit-scrollbar-track {
+        background: #202124; 
       }
       ::-webkit-scrollbar-thumb {
-        background: #333; 
-        border-radius: 3px;
+        background: #dadce0; 
+        border-radius: 4px;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #3c4043; 
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #555; 
+        background: #bdc1c6; 
       }
-      .glass-panel {
-        background: rgba(30, 30, 30, 0.7);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #5f6368; 
       }
       .canvas-pattern {
-        background-color: #121212;
-        background-image: radial-gradient(#2a2a2a 1px, transparent 1px);
+        background-color: #f8f9fa;
+        background-image: radial-gradient(#dadce0 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+      .dark .canvas-pattern {
+        background-color: #171717;
+        background-image: radial-gradient(#333333 1px, transparent 1px);
         background-size: 20px 20px;
       }
       /* Advanced Typography */
@@ -96,9 +110,8 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-z-black text-white antialiased overflow-hidden">
+  <body class="bg-g-bg text-g-text antialiased overflow-hidden font-sans">
     <div id="root" class="h-screen w-screen flex flex-col"></div>
   <script type="module" src="/index.tsx"></script>
 </body>
