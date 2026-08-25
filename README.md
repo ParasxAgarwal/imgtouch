@@ -17,7 +17,7 @@ ImgTouch is a premium, smooth, and professional creative studio powered by AI. I
 - **Google Material Theme**: Crisp Light and Dark themes with clean color chips and smooth transitions.
 - **Full Canvas Control**: Layer reordering (Front/Up/Down/Back), layer cloning, image flipping, text styling, and custom sticker support.
 
-## 🛠️ Run Locally
+## 🛠️ Development
 
 **Prerequisites:** Node.js (v18+)
 
